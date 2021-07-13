@@ -19,7 +19,7 @@ local local_actions = {
     put_on_buf(entry.value,'p',0)
   end
 }
-local make_entry_form_yank = function(line)
+local make_entry_form_yank = function(entry)
   local displayer = entry_display.create {
     separator = ' ',
     items = {
@@ -27,14 +27,15 @@ local make_entry_form_yank = function(line)
       { remaining = true },
     },
   }
+  local combiled_lines = table.concat(entry[1], ' ')
   local make_display = function()
-    local prefix = line[2] == 'v' and 'char' or 'line'
+    local prefix = entry[2] == 'v' and 'char' or 'line'
     return displayer {
       { prefix, 'TelescopeResultsComment' },
-      line[1][1]
+      combiled_lines
     }
   end
-  return { display = make_display, ordinal = line[1][1], value = line}
+  return { display = make_display, ordinal = combiled_lines, value = entry}
 end
 
 local M = {}
