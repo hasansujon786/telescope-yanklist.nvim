@@ -18,6 +18,16 @@ local local_actions = {
     local entry = action_state.get_selected_entry()
     require('telescope.actions').close(prompt_bufnr)
     put_on_buf(entry.value,'p', is_visual)
+  end,
+  putup = function (prompt_bufnr)
+    local entry = action_state.get_selected_entry()
+    require('telescope.actions').close(prompt_bufnr)
+    put_on_buf(entry.value,'P', is_visual)
+  end,
+  yank = function (prompt_bufnr)
+    local entry = action_state.get_selected_entry()
+    require('telescope.actions').close(prompt_bufnr)
+    vim.fn.setreg('"', entry.value[1], entry.value[2])
   end
 }
 local make_entry_form_yank = function(entry)
@@ -56,9 +66,12 @@ M.yanklist = function(opts)
     -- previewer = conf.file_previewer(opts),
     -- default_selection_index = 2,
     attach_mappings = function(_, map)
-      map('i', '<cr>', local_actions.put)
-      map('n', '<cr>', local_actions.put)
-
+      map('i', '<cr>',  local_actions.put)
+      map('n', '<cr>',  local_actions.put)
+      map('i', '<c-t>', local_actions.putup)
+      map('n', '<c-t>', local_actions.putup)
+      map('i', '<c-y>', local_actions.yank)
+      map('n', '<c-y>', local_actions.yank)
       return true
     end,
   }):find()
