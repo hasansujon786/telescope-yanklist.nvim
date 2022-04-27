@@ -5,7 +5,6 @@ let g:yanklist_delete_maxlines = 1000
 augroup YankList
   au!
   au TextYankPost * call yanklist#on_yank(copy(v:event))
-  au TextYankPost * silent! lua vim.highlight.on_yank {on_visual=true, higroup = 'Search', timeout = 200}
 augroup END
 
 noremap <silent> <expr> <Plug>(yanklist-auto-put) yanklist#startput("p",1)
