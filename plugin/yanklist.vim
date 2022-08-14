@@ -14,10 +14,3 @@ noremap <silent> <expr> <Plug>(yanklist-last-item-put) yanklist#startput("p",0)
 noremap <silent> <expr> <Plug>(yanklist-last-item-Put) yanklist#startput("P",0)
 noremap <silent> <Plug>(yanklist-cycle-forward) :<c-u>call yanklist#cycle(1)<cr>
 noremap <silent> <Plug>(yanklist-cycle-backward) :<c-u>call yanklist#cycle(-1)<cr>
-
-map p <Plug>(yanklist-auto-put)
-map P <Plug>(yanklist-auto-Put)
-map [r <Plug>(yanklist-cycle-forward)
-map ]r <Plug>(yanklist-cycle-backward)
-map <leader>ii <Plug>(yanklist-last-item-put)
-map <leader>iI <Plug>(yanklist-last-item-Put)
