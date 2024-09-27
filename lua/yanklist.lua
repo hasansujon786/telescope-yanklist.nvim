@@ -90,4 +90,10 @@ M.yanklist = function(opts)
     :find()
 end
 
+M.yanklist_visual = function(opts)
+  opts = utils.get_default(opts, {})
+  opts.is_visual = true
+  M.yanklist(opts)
+end
+
 return M
