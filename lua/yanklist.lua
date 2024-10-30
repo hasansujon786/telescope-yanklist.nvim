@@ -3,42 +3,33 @@ local pickers = require('telescope.pickers')
 local finders = require('telescope.finders')
 local action_state = require('telescope.actions.state')
 local conf = require('telescope.config').values
--- local actions = require('telescope/actions')
--- local sorters = require('telescope/sorters')
 local utils = require('yanklist.utils')
-
-local is_visual = false
 local yanklist_get = vim.fn['yanklist#read']
 
-local put_on_buf = function(data, after, visual)
-  local reg_type = data[2]
-  local follow_cursor = not reg_type == 'l'
-
-  if visual then
-    vim.cmd('normal! gvd')
-    local old_reg_type = vim.fn.getregtype('"')
-    if after and old_reg_type == 'V' then
-      after = false
-    end
-  end
-
-  vim.schedule(function()
-    vim.api.nvim_put(data[1], reg_type, after, follow_cursor)
-  end)
-end
-
 local local_actions = {
-  put = function(prompt_bufnr)
+  put = function(prompt_bufnr, put_after, is_visual)
+    ---@type SelectedEntry
     local entry = action_state.get_selected_entry()
     require('telescope.actions').close(prompt_bufnr)
-    put_on_buf(entry.value, true, is_visual)
-  end,
-  put_before = function(prompt_bufnr)
-    local entry = action_state.get_selected_entry()
-    require('telescope.actions').close(prompt_bufnr)
-    put_on_buf(entry.value, false, is_visual)
+
+    local value = entry.value
+    local reg_type = value[2]
+    local content = value[1]
+
+    if is_visual then
+      vim.schedule(function()
+        vim.cmd('normal! gv"_d')
+        vim.api.nvim_put(content, reg_type, false, true)
+      end)
+      return
+    end
+
+    vim.schedule(function()
+      vim.api.nvim_put(content, reg_type, put_after, true)
+    end)
   end,
   yank = function(prompt_bufnr)
+    ---@type SelectedEntry
     local entry = action_state.get_selected_entry()
     require('telescope.actions').close(prompt_bufnr)
     vim.fn.setreg('"', entry.value[1], entry.value[2])
@@ -67,7 +58,7 @@ local M = {}
 
 M.yanklist = function(opts)
   opts = utils.get_default(opts, {})
-  is_visual = utils.get_default(opts.is_visual, false)
+  local is_visual = utils.get_default(opts.is_visual, false)
 
   pickers
     .new(opts, {
@@ -79,11 +70,20 @@ M.yanklist = function(opts)
       sorter = opts.sorter or conf.generic_sorter(opts),
       -- initial_mode = 'normal',
       -- previewer = conf.file_previewer(opts),
-      -- default_selection_index = 2,
-      attach_mappings = function(_, map)
-        map({ 'n', 'i' }, '<cr>', local_actions.put)
-        map({ 'n', 'i' }, '<c-t>', local_actions.put_before)
+      attach_mappings = function(prompt_bufnr, map)
+        map({ 'n', 'i' }, '<cr>', function()
+          local_actions.put(prompt_bufnr, true, is_visual)
+        end)
+        map({ 'n', 'i' }, '<c-t>', function()
+          local_actions.put(prompt_bufnr, false, is_visual)
+        end)
         map({ 'n', 'i' }, '<c-y>', local_actions.yank)
+
+        map({ 'n', 'i' }, '<tab>', require('telescope.actions').move_selection_previous)
+        map({ 'n', 'i' }, '<s-tab>', require('telescope.actions').move_selection_next)
+
+        map({ 'n', 'i' }, '<C-v>', nil)
+        map({ 'n', 'i' }, '<C-s>', nil)
         return true
       end,
     })
@@ -97,3 +97,14 @@ M.yanklist_visual = function(opts)
 end
 
 return M
+
+---@class Value
+---@field [1] string[] -- content
+---@field [2] string -- reg_type
+---@field [3] string -- I forgot
+
+---@class SelectedEntry
+---@field display fun() -- Display string
+---@field index number -- Index number
+---@field ordinal string -- Ordinal string
+---@field value Value -- Value field of type Value
