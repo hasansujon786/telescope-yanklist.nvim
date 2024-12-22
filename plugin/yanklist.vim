@@ -1,4 +1,5 @@
-let g:yanklist_filename = stdpath('data')."/telescope-yanklist"
+let g:yanklist_finder = get(g:, 'yanklist_finder', 'default')
+let g:yanklist_filename = stdpath('data').'/yanklist-'.g:yanklist_finder
 let g:yanklist_maxitems = 50
 let g:yanklist_delete_maxlines = 1000
 

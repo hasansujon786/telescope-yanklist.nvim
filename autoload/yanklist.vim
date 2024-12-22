@@ -48,7 +48,11 @@ function! yanklist#on_yank(ev) abort
   if a:ev.regname == ''
     let a:ev.regname = yanklist#parse_cb()
   endif
-  call yanklist#add_item(state, [a:ev.regcontents, a:ev.regtype, a:ev.regname])
+  if g:yanklist_finder == 'fzf-lua'
+    call yanklist#add_item(state, [join(a:ev.regcontents, "\n"), a:ev.regtype, a:ev.regname])
+  else
+    call yanklist#add_item(state, [a:ev.regcontents, a:ev.regtype, a:ev.regname])
+  endif
   call yanklist#write(state)
 endfunction
 

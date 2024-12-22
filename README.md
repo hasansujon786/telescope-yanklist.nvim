@@ -1,6 +1,6 @@
-# telescope-yanklist.nvim
+# yanklist.nvim
 
-An extension for [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) that persists yanks &amp; can search through them. .
+An extension for neovim that persists yanks &amp; can search through them. .
 
 # Installation
 
@@ -8,8 +8,15 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim)
 
 ```lua
 return {
-  'hasansujon786/telescope-yanklist.nvim',
+  'hasansujon786/yanklist.nvim',
   event = { 'CursorHold' },
+  dependencies = {
+    'nvim-telescope/telescope.nvim',
+    -- 'ibhagwan/fzf-lua', -- Use fzf-lua as finder
+  },
+  init = function()
+    vim.g.yanklist_finder = 'defalut' -- 'defalut'|'fzf-lua'
+  end,
   config = function()
     -- Put mappings
     keymap('n', 'p', '<Plug>(yanklist-auto-put)', { desc = 'Put the text' })
